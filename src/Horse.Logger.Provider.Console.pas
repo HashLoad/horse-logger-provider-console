@@ -27,6 +27,7 @@ type
     constructor Create;
     function SetLogFormat(ALogFormat: string): THorseLoggerConsoleConfig;
     function GetLogFormat(out ALogFormat: string): THorseLoggerConsoleConfig;
+    class function New: THorseLoggerConsoleConfig;
   end;
 
   THorseLoggerProviderConsoleManager = class(THorseLoggerThread)
@@ -194,6 +195,11 @@ function THorseLoggerConsoleConfig.GetLogFormat(out ALogFormat: string): THorseL
 begin
   Result := Self;
   ALogFormat := FLogFormat;
+end;
+
+class function THorseLoggerConsoleConfig.New: THorseLoggerConsoleConfig;
+begin
+  Result := THorseLoggerConsoleConfig.Create;
 end;
 
 function THorseLoggerConsoleConfig.SetLogFormat(ALogFormat: string): THorseLoggerConsoleConfig;
