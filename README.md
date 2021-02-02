@@ -22,7 +22,8 @@ var
   LConsoleConfig: THorseLoggerConsoleConfig
 
 begin
-  LConsoleConfig := THorseLoggerConsoleConfig.New.SetFormat('${request_clientip} [${time}] ${response_status}');
+  LConsoleConfig := THorseLoggerConsoleConfig.New
+    .SetFormat('${request_clientip} [${time}] ${response_status}');
 
   THorseLoggerManager.RegisterProvider(
     THorseLoggerProviderLogFile.New(LConsoleConfig)
