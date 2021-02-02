@@ -133,7 +133,7 @@ begin
   if LLogCache.Count = 0 then
     Exit;
   if FConfig = nil then
-    FConfig := THorseLoggerConsoleConfig.Create;
+    FConfig := THorseLoggerConsoleConfig.New;
   FConfig.GetLogFormat(LLogStr);
   try
     for I := 0 to Pred(LLogCache.Count) do
