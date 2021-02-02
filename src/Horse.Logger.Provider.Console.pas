@@ -61,15 +61,9 @@ implementation
 
 uses
 {$IFDEF FPC }
-  SysUtils, fpJSON, SyncObjs,
-{$IFDEF MSWINDOWS}
-  Windows;
-{$ENDIF MSWINDOWS}
+  SysUtils, fpJSON, SyncObjs{$IFDEF MSWINDOWS},Windows{$ENDIF MSWINDOWS};
 {$ELSE}
-System.SysUtils, System.JSON, System.SyncObjs,
-{$IFDEF MSWINDOWS}
-  Winapi.Windows;
-{$ENDIF MSWINDOWS}
+  System.SysUtils, System.JSON, System.SyncObjs{$IFDEF MSWINDOWS},Winapi.Windows{$ENDIF MSWINDOWS};
 {$ENDIF}
 
 { THorseLoggerProviderConsole }
