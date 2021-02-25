@@ -61,9 +61,9 @@ implementation
 
 uses
 {$IFDEF FPC }
-  SysUtils, fpJSON, SyncObjs{$IFDEF MSWINDOWS},Windows{$ENDIF MSWINDOWS};
+  SysUtils, fpJSON, SyncObjs{$IFDEF MSWINDOWS}, Windows{$ENDIF MSWINDOWS};
 {$ELSE}
-  System.SysUtils, System.JSON, System.SyncObjs{$IFDEF MSWINDOWS},Winapi.Windows{$ENDIF MSWINDOWS};
+  System.SysUtils, System.JSON, System.SyncObjs{$IFDEF MSWINDOWS}, Winapi.Windows{$ENDIF MSWINDOWS};
 {$ENDIF}
 
 { THorseLoggerProviderConsole }
@@ -123,13 +123,13 @@ var
   LLogStr: string;
   LResponseStatus: Integer;
 begin
-  LLogCache := ExtractLogCache;
-  if LLogCache.Count = 0 then
-    Exit;
   if FConfig = nil then
     FConfig := THorseLoggerConsoleConfig.New;
   FConfig.GetLogFormat(LLogStr);
+  LLogCache := ExtractLogCache;
   try
+    if LLogCache.Count = 0 then
+      Exit;
     for I := 0 to Pred(LLogCache.Count) do
     begin
       LLog := LLogCache.Items[I] as THorseLoggerLog;
