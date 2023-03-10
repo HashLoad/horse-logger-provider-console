@@ -9,12 +9,12 @@ uses
   Horse.Logger.Provider.Console, // It's necessary to use the unit
   System.SysUtils;
 
-var
-  LLogFileConfig: THorseLoggerConsoleConfig;
+//var
+//  LLogFileConfig: THorseLoggerConsoleConfig;
 
 begin
-  LLogFileConfig := THorseLoggerConsoleConfig.New
-    .SetLogFormat('${request_clientip} [${time}] ${response_status}');
+//  LLogFileConfig := THorseLoggerConsoleConfig.New
+//    .SetLogFormat('${request_clientip} [${time}] ${response_status}');
 
   // You can also specify the log format:
   // THorseLoggerManager.RegisterProvider(THorseLoggerProviderConsole.New(LLogFileConfig));
@@ -26,7 +26,7 @@ begin
   THorse.Use(THorseLoggerManager.HorseCallback);
 
   THorse.Get('/ping',
-    procedure(Req: THorseRequest; Res: THorseResponse; Next: TProc)
+    procedure(Req: THorseRequest; Res: THorseResponse)
     begin
       Res.Send('pong');
     end);
