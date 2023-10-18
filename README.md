@@ -40,12 +40,12 @@ uses
   Horse.Logger.Provider.Console, // It's necessary to use the unit
   System.SysUtils;
 
-var
-  LLogFileConfig: THorseLoggerConsoleConfig;
+// var
+//   LLogFileConfig: THorseLoggerConsoleConfig;
 
 begin
-  LLogFileConfig := THorseLoggerConsoleConfig.New
-    .SetLogFormat('${request_clientip} [${time}] ${response_status}');
+  // LLogFileConfig := THorseLoggerConsoleConfig.New
+  //   .SetLogFormat('${request_clientip} [${time}] ${response_status}');
 
   // You can also specify the log format:
   // THorseLoggerManager.RegisterProvider(THorseLoggerProviderConsole.New(LLogFileConfig));
@@ -79,8 +79,8 @@ uses
   Horse.Logger.Provider.Console, // It's necessary to use the unit
   SysUtils;
 
-var
-  LLogFileConfig: THorseLoggerConsoleConfig;
+// var
+//   LLogFileConfig: THorseLoggerConsoleConfig;
 
 procedure GetPing(Req: THorseRequest; Res: THorseResponse; Next: TNextProc);
 begin
@@ -88,8 +88,8 @@ begin
 end;
 
 begin
-  LLogFileConfig := THorseLoggerConsoleConfig.New
-    .SetLogFormat('${request_clientip} [${time}] ${response_status}');
+  // LLogFileConfig := THorseLoggerConsoleConfig.New
+  //   .SetLogFormat('${request_clientip} [${time}] ${response_status}');
 
   // You can also specify the log format:
   // THorseLoggerManager.RegisterProvider(THorseLoggerProviderConsole.New(LLogFileConfig));
