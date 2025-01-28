@@ -96,7 +96,7 @@ var
   I: Integer;
 begin
   for I := 0 to Pred(ALogCache.Count) do
-    FHorseLoggerProviderConsoleManager.NewLog(THorseLoggerLog(ALogCache.Items[0].Clone));
+    FHorseLoggerProviderConsoleManager.NewLog(THorseLoggerLog(ALogCache.Items[I].Clone));
 end;
 
 class function THorseLoggerProviderConsole.New(const AConfig: THorseLoggerConsoleConfig = nil): IHorseLoggerProvider;
@@ -125,13 +125,13 @@ var
 begin
   if FConfig = nil then
     FConfig := THorseLoggerConsoleConfig.New;
-  FConfig.GetLogFormat(LLogStr);
   LLogCache := ExtractLogCache;
   try
     if LLogCache.Count = 0 then
       Exit;
     for I := 0 to Pred(LLogCache.Count) do
     begin
+      LLogStr := FConfig.FLogFormat;
       LLog := LLogCache.Items[I] as THorseLoggerLog;
       LParams := THorseLoggerUtils.GetFormatParams(LLogStr);
       for Z := Low(LParams) to High(LParams) do
