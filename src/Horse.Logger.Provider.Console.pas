@@ -20,11 +20,17 @@ type
   private
     { private declarations }
     FLogFormat: string;
+    FIgnoreRoutes: TStrings;
   protected
     { protected declarations }
   public
     { public declarations }
+
+    procedure AddIgnoreRoute(const ARoute: string);
+    function IsIgnoredRoute(const ARoute: string): Boolean;
+
     constructor Create;
+    destructor Destroy; override;
     function SetLogFormat(ALogFormat: string): THorseLoggerConsoleConfig;
     function GetLogFormat(out ALogFormat: string): THorseLoggerConsoleConfig;
     class function New: THorseLoggerConsoleConfig;
@@ -133,6 +139,12 @@ begin
     begin
       LLogStr := FConfig.FLogFormat;
       LLog := LLogCache.Items[I] as THorseLoggerLog;
+      if LLog.TryGetValue<String>('request_path_info', LValue) then
+      begin
+        if FConfig.IsIgnoredRoute(LValue) then
+          Continue;
+      end;
+
       LParams := THorseLoggerUtils.GetFormatParams(LLogStr);
       for Z := Low(LParams) to High(LParams) do
       begin
@@ -178,17 +190,35 @@ begin
   FConfig := AConfig;
 end;
 
+procedure THorseLoggerConsoleConfig.AddIgnoreRoute(const ARoute: string);
+begin
+  self.FIgnoreRoutes.Add(ARoute);
+end;
+
 { THorseLoggerConfig }
 
 constructor THorseLoggerConsoleConfig.Create;
 begin
   FLogFormat := DEFAULT_HORSE_LOG_FORMAT;
+  FIgnoreRoutes := TStringList.Create(TDuplicates.dupIgnore, true, false);
+end;
+
+destructor THorseLoggerConsoleConfig.Destroy;
+begin
+  self.FIgnoreRoutes.Free;
+  inherited;
 end;
 
 function THorseLoggerConsoleConfig.GetLogFormat(out ALogFormat: string): THorseLoggerConsoleConfig;
 begin
   Result := Self;
   ALogFormat := FLogFormat;
+end;
+
+function THorseLoggerConsoleConfig.IsIgnoredRoute(
+  const ARoute: string): Boolean;
+begin
+  result := self.FIgnoreRoutes.Contains(ARoute);
 end;
 
 class function THorseLoggerConsoleConfig.New: THorseLoggerConsoleConfig;
