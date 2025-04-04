@@ -1,7 +1,7 @@
 unit Horse.Logger.Provider.Console;
 
 {$IFDEF FPC }
-{$MODE DELPHI}
+  {$MODE DELPHI}
 {$ENDIF}
 
 interface
@@ -15,25 +15,18 @@ uses
   Horse.Logger;
 
 type
-
   THorseLoggerConsoleConfig = class
   private
-    { private declarations }
     FLogFormat: string;
     FIgnoreRoutes: TStrings;
-  protected
-    { protected declarations }
   public
-    { public declarations }
-
+    constructor Create;
     procedure AddIgnoreRoute(const ARoute: string);
     function IsIgnoredRoute(const ARoute: string): Boolean;
-
-    constructor Create;
-    destructor Destroy; override;
     function SetLogFormat(ALogFormat: string): THorseLoggerConsoleConfig;
     function GetLogFormat(out ALogFormat: string): THorseLoggerConsoleConfig;
     class function New: THorseLoggerConsoleConfig;
+    destructor Destroy; override;
   end;
 
   THorseLoggerProviderConsoleManager = class(THorseLoggerThread)
@@ -67,7 +60,7 @@ implementation
 
 uses
 {$IFDEF FPC }
-  SysUtils, fpJSON, SyncObjs{$IFDEF MSWINDOWS}, Windows{$ENDIF MSWINDOWS};
+  StrUtils, SysUtils, fpJSON, SyncObjs{$IFDEF MSWINDOWS}, Windows{$ENDIF MSWINDOWS};
 {$ELSE}
   System.SysUtils, System.JSON, System.SyncObjs{$IFDEF MSWINDOWS}, Winapi.Windows{$ENDIF MSWINDOWS};
 {$ENDIF}
@@ -139,31 +132,39 @@ begin
     begin
       LLogStr := FConfig.FLogFormat;
       LLog := LLogCache.Items[I] as THorseLoggerLog;
+      {$IFDEF FPC}
+      if LLog.Find('request_path_info', LValue) then
+      begin
+        if FConfig.IsIgnoredRoute(LValue.AsString) then
+          Continue;
+      end;
+      {$ELSE}
       if LLog.TryGetValue<String>('request_path_info', LValue) then
       begin
         if FConfig.IsIgnoredRoute(LValue) then
           Continue;
       end;
+      {$ENDIF}
 
       LParams := THorseLoggerUtils.GetFormatParams(LLogStr);
       for Z := Low(LParams) to High(LParams) do
       begin
-{$IFDEF FPC}
+        {$IFDEF FPC}
         if LLog.Find(LParams[Z], LValue) then
           LLogStr := LLogStr.Replace('${' + LParams[Z] + '}', LValue.AsString);
-{$ELSE}
+        {$ELSE}
         if LLog.TryGetValue<string>(LParams[Z], LValue) then
           LLogStr := LLogStr.Replace('${' + LParams[Z] + '}', LValue);
-{$ENDIF}
+        {$ENDIF}
       end;
-{$IFDEF FPC}
+      {$IFDEF FPC}
       if LLog.Find('response_status', LValue) then
       begin
         LResponseStatus := LValue.AsInteger;
-{$ELSE}
+      {$ELSE}
       if LLog.TryGetValue<Integer>('response_status', LResponseStatus) then
       begin
-{$ENDIF}
+      {$ENDIF}
         if (LResponseStatus >= 200) and (LResponseStatus <= 299) then
           LLogStr := #27'[1;92m' + LLogStr + #27'[0m'
         else if (LResponseStatus >= 300) and (LResponseStatus <= 399) then
@@ -173,9 +174,9 @@ begin
         else if (LResponseStatus >= 500) and (LResponseStatus <= 599) then
           LLogStr := #27'[1;91m' + LLogStr + #27'[0m';
       end;
-{$IFDEF MSWINDOWS}
+      {$IFDEF MSWINDOWS}
       SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-{$ENDIF MSWINDOWS}
+      {$ENDIF MSWINDOWS}
       WriteLn(LLogStr);
     end;
 
@@ -192,7 +193,7 @@ end;
 
 procedure THorseLoggerConsoleConfig.AddIgnoreRoute(const ARoute: string);
 begin
-  self.FIgnoreRoutes.Add(ARoute);
+  Self.FIgnoreRoutes.Add(ARoute);
 end;
 
 { THorseLoggerConfig }
@@ -200,12 +201,16 @@ end;
 constructor THorseLoggerConsoleConfig.Create;
 begin
   FLogFormat := DEFAULT_HORSE_LOG_FORMAT;
+{$IFDEF FPC }
+  FIgnoreRoutes := TStringList.Create;
+{$ELSE}
   FIgnoreRoutes := TStringList.Create(TDuplicates.dupIgnore, true, false);
+{$ENDIF}
 end;
 
 destructor THorseLoggerConsoleConfig.Destroy;
 begin
-  self.FIgnoreRoutes.Free;
+  Self.FIgnoreRoutes.Free;
   inherited;
 end;
 
@@ -215,10 +220,13 @@ begin
   ALogFormat := FLogFormat;
 end;
 
-function THorseLoggerConsoleConfig.IsIgnoredRoute(
-  const ARoute: string): Boolean;
+function THorseLoggerConsoleConfig.IsIgnoredRoute(const ARoute: string): Boolean;
 begin
-  result := self.FIgnoreRoutes.Contains(ARoute);
+{$IFDEF FPC}
+  Result := AnsiContainsText(Self.FIgnoreRoutes.Text, ARoute);
+{$ELSE}
+  Result := Self.FIgnoreRoutes.Contains(ARoute);
+{$ENDIF}
 end;
 
 class function THorseLoggerConsoleConfig.New: THorseLoggerConsoleConfig;
