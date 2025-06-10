@@ -225,7 +225,7 @@ begin
 {$IFDEF FPC}
   Result := AnsiContainsText(Self.FIgnoreRoutes.Text, ARoute);
 {$ELSE}
-  Result := Self.FIgnoreRoutes.Contains(ARoute);
+  Result := (Self.FIgnoreRoutes.IndexOf(ARoute) <> -1);
 {$ENDIF}
 end;
 
